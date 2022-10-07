@@ -1,0 +1,18 @@
+local Circle = Instance.new("BillboardGui")
+local Frame = Instance.new("Frame")
+local UICorner = Instance.new("UICorner")
+
+Circle.Name = "Circle"
+Circle.Parent = game.Workspace.Resplendent.Main
+Circle.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+Circle.Active = true
+Circle.AlwaysOnTop = true
+Circle.LightInfluence = 1.000
+Circle.Size = UDim2.new(0, 100, 0, 100)
+
+Frame.Parent = Circle
+Frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Frame.Size = UDim2.new(0, 100, 0, 100)
+
+UICorner.CornerRadius = UDim.new(1, 0)
+UICorner.Parent = Frame
