@@ -1,0 +1,240 @@
+if game:GetService("Workspace").Map:FindFirstChild("RealCloud") then
+	game:GetService("Workspace").Map:FindFirstChild("RealCloud"):Destroy()
+	game:GetService("Lighting").SunRays.Enabled = false
+end
+
+local AFKPart = Instance.new("Part")
+AFKPart.Name = "AFKtraning"
+AFKPart.Anchored = true
+AFKPart.Position = Vector3.new(0, 599990, -0)
+AFKPart.Size = Vector3.new(50, 1, 50)
+AFKPart.Parent = workspace
+AFKPart.Material = Enum.Material.ForceField
+
+local SelectionBox = Instance.new("SelectionBox")
+SelectionBox.Parent = AFKPart
+SelectionBox.Adornee = AFKPart
+SelectionBox.SurfaceColor3 = Color3.new(0.4, 1, 0.65098)
+
+local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
+local Window = OrionLib:MakeWindow({Name = "X-SPTS:Origin", HidePremium = false, SaveConfig = true, ConfigFolder = "X-SPTS-ConfigSave"})
+
+local UilizedRemoteEvent:RemoteEvent = game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvent")
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+local Character = LocalPlayer.Character
+LocalPlayer.CharacterAdded:Connect(function(char)
+	Character = char
+end)
+
+
+local CurrentCamera = workspace.CurrentCamera
+
+local Mouse = LocalPlayer:GetMouse()
+
+local ChosenTraining = ""
+
+local Train = {
+	["Fist Strength"] = { 
+		[1] = "Add_FS_Request",
+		[2] = 1
+	},
+
+	["Body Toughness"] = {
+		[1] = "+BT1"
+	},
+
+	["Movement Speed"] = {
+		[1] = "Add_MS_Request",
+		[2] = 1
+	},
+
+	["Psychic Power"] = {
+		[1] = "+PP2"
+	},
+
+	["Jump Force"] = {
+		[1] = "Add_JF_Request",
+		[2] = 1
+	}
+}
+
+local Teleports = {
+	["Crystal"] = CFrame.new(-2274.65576, 1948.49622, 1079.46606, 1, 0, 0, 0, 1, 0, 0, 0, 1),
+	["Rock"] = CFrame.new(406.236115, 273.982178, 980.440857, 1, 0, 0, 0, 1, 0, 0, 0, 1),
+	["Port"] = CFrame.new(353.518372, 252.013062, -455.427856, 0.999995291, 0, -0.00304988446, 0, 1, 0, 0.00304988399, 0, 0.99999541),
+	["Island"] = CFrame.new(-2519.47363, 5506.26318, -487.221222, 0.214290515, 0, 0.976771235, -7.19673654e-09, 1, 1.49011612e-08, -0.976769567, 1.11758709e-08, 0.214290872),
+	["Volcano"] = CFrame.new(-2123.55981, 738.771545, -1843.73999, 1, 0, 0, 0, 1, 0, 0, 0, 1),
+	["Tornado"] = CFrame.new(-2299.67236, 978.569031, 1068.67029, 0.999096453, -0.0425025001, -0.000210015351, 0.0425030254, 0.999084055, 0.00493672118, 0, -0.00494118594, 0.999987841),
+	["Ice Bath"] = CFrame.new(1606.13635, 271.072754, 2248.15723, 0.10416624, 0.511164486, -0.853147268, -0, 0.857813835, 0.513960481, 0.994559884, -0.0535373315, 0.0893552452),
+	["AFK Farm"] = CFrame.new(0, 599999, -1.36359749e-05, 0.214290515, 0, 0.976771235, -7.19673654e-09, 1, 1.49011612e-08, -0.976769567, 1.11758709e-08, 0.214290872)
+}
+
+local FarmTab = Window:MakeTab({
+	Name = "AutoFarm",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+
+FarmTab:AddDropdown({
+	Name = "Train",
+	Default = "Nothing",
+	Options = {"Nothing", "Fist Strength", "Body Toughness", "Movement Speed", "Psychic Power", "Jump Force"},
+
+	Callback = function(Value)
+		ChosenTraining = Value
+		if Train[ChosenTraining] then
+			OrionLib:MakeNotification({
+				Name = "AutoFarm",
+				Content = "Farming "..Value,
+				Image = "rbxassetid://4483345998",
+				Time = 5
+			})
+		else
+			OrionLib:MakeNotification({
+				Name = "AutoFarm",
+				Content = "Not Farming",
+				Image = "rbxassetid://4483345998",
+				Time = 5
+			})
+		end
+
+	end
+})
+
+FarmTab:AddDropdown({
+	Name = "Teleport",
+	Default = "Nothing",
+	Options = {"Nothing", "Crystal", "Rock", "Port", "Island", "Volcano", "Tornado", "Ice Bath", "AFK Farm"},
+
+	Callback = function(Value)
+		if Teleports[Value] then
+			print(Character.Parent)
+			Character:PivotTo(Teleports[Value])
+		end
+	end
+})
+
+local FarmQuests = false
+
+FarmTab:AddToggle({
+	Name = "Farm Quests",
+	Default = true,
+	Callback = function(Value)
+		FarmQuests = Value
+	end
+})
+
+FarmTab:AddButton({
+	Name = "Submit Quest",
+	Callback = function()
+		game:GetService("ReplicatedStorage").RemoteEvent:FireServer( { [1] = "QuestTalkStart" } )
+		game:GetService("ReplicatedStorage").RemoteEvent:FireServer( { [1] = "QuestTalkEnd", [2] = "Sath" } )
+	end    
+})
+
+
+
+coroutine.wrap(function()
+	while task.wait(1) do
+		if FarmQuests then
+			local Missions = 0
+
+			for _,v in pairs(LocalPlayer.PlayerGui.ScreenGui.MainQuestFrame:GetChildren()) do
+				if v:IsA("Frame") and v.Visible == true then
+					local sp = v.ProgTxt.Text:split(" / ")
+					local QuestTxt = v.QuestTxt.Text
+
+					if v.ProgTxt.Text ~= sp[2] .. " / " .. sp[2] then
+						Missions +=1
+						local split = QuestTxt:split("Train ")
+						local Numbers = v.ProgTxt.Text:split(" / ")
+
+						if Train[split[2]] then
+							while task.wait(0.5) do
+								if v.ProgTxt.Text == sp[2].." / "..sp[2] or not FarmQuests then
+									break
+								end
+								game:GetService("ReplicatedStorage").RemoteEvent:FireServer( Train[split[2]] )
+							end
+
+						end
+					end
+
+				end
+			end
+		end
+	end
+end)()
+
+coroutine.wrap(function()
+	while task.wait(0.5) do
+		if Train[ChosenTraining] then
+			UilizedRemoteEvent:FireServer(Train[ChosenTraining])
+		end
+	end
+end)()
+
+local MiscTab = Window:MakeTab({
+	Name = "Misc",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+
+local AR = true
+
+MiscTab:AddToggle({
+	Name = "Auto Respawn",
+	Default = true,
+	Callback = function(Value)
+		AR = Value
+	end
+})
+
+local TargettedPlayer = nil
+
+local TeleportDropdown = MiscTab:AddDropdown({
+	Name = "Player Teleports",
+	Default = "None",
+	Options = {"None"},
+
+	Callback = function(Value)
+		TargettedPlayer = Value
+	end
+})
+
+coroutine.wrap(function()
+	while task.wait() do
+		if AR then
+			if LocalPlayer.PlayerGui.IntroGui.Enabled then
+				game:GetService("ReplicatedStorage").RemoteEvent:FireServer( { [1] = "Respawn"} )
+				game:GetService("Lighting").Blur.Enabled = false
+				LocalPlayer.PlayerGui.IntroGui.Enabled = false
+				LocalPlayer.PlayerGui.ScreenGui.Enabled = true
+			end
+		end
+		
+		if game:GetService("Players"):FindFirstChild(TargettedPlayer) then
+			Character:PivotTo(Players[TargettedPlayer].Character:GetPivot())
+		end
+	end
+end)()
+
+coroutine.wrap(function()
+	while task.wait(2) do
+		local Plrs = {"None"}
+		
+		for _,v in ipairs(Players:GetChildren()) do
+			if v ~= LocalPlayer then
+				table.insert(Plrs, v.Name)
+			end
+		end
+		
+		TeleportDropdown:Refresh(Plrs,true)
+	end
+end)()
+
+
+OrionLib:Init() -- https://github.com/shlexware/Orion/blob/main/Documentation.md
