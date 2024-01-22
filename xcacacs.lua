@@ -49,7 +49,13 @@ end
 
 
 function Convert(numberSequence: NumberSequence)
-	local Caacaa = {"NumberSequence.new{"}
+	local Caacaa;
+
+	if typeof(numberSequence) == "ColorSequence" then
+		Caacaa = {"ColorSequence.new{"}
+	else
+		Caacaa = {"NumberSequence.new{"}
+	end
 	
 	for i,Keypoints in ipairs(numberSequence.Keypoints) do
 		if typeof(Keypoints) == "ColorSequenceKeypoint" then
