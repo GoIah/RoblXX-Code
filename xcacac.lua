@@ -33,7 +33,7 @@ local Porps = {}
 local NameLookUp = {}
 
 for i,Model in ipairs(Models:GetDescendants()) do
-	NameLookUp[Model.Parent] = "v"..i
+	NameLookUp[Model] = "v"..i
 	Porps[i] = {}
 
 	for _,v in ipairs(ToCopy) do
