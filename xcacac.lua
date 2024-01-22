@@ -54,9 +54,9 @@ function Convert(numberSequence: NumberSequence)
 	for i,Keypoints in ipairs(numberSequence.Keypoints) do
 		if typeof(Keypoints) == "ColorSequenceKeypoint" then
 			if i ~= #numberSequence.Keypoints then
-				table.insert(Caacaa, `\nColorSequenceKeypoint.new({Keypoints.Time}, Color3.new({Keypoints.Value}),`)
+				table.insert(Caacaa, `\nColorSequenceKeypoint.new({Keypoints.Time}, Color3.new({Keypoints.Value})),`)
 			else
-				table.insert(Caacaa, `\nColorSequenceKeypoint.new({Keypoints.Time}, Color3.new({Keypoints.Value})`)
+				table.insert(Caacaa, `\nColorSequenceKeypoint.new({Keypoints.Time}, Color3.new({Keypoints.Value}))`)
 			end
 		else
 			if i ~= #numberSequence.Keypoints then
