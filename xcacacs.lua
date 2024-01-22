@@ -119,9 +119,9 @@ for i,Data in pairs(Porps) do
 			elseif Porp == "Texture" then
 				table.insert(Script, `v{i}.{Porp} = "{Data[Porp]}"\n`)
 			elseif Porp == "BackgroundColor3" then
-				table.insert(Script, `v{i}.{Porp} = "Color3.new({Data[Porp]})"\n`)
+				table.insert(Script, `v{i}.{Porp} = Color3.new({Data[Porp]})\n`)
 			elseif Porp == "TextColor3" then
-				table.insert(Script, `v{i}.{Porp} = "Color3.new({Data[Porp]})"\n`)
+				table.insert(Script, `v{i}.{Porp} = Color3.new({Data[Porp]})\n`)
 			else
 				table.insert(Script, `v{i}.{Porp} = {Data[Porp]}\n`)
 			end
